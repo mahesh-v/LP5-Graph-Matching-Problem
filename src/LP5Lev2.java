@@ -3,7 +3,7 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 
-public class LP5Lev1 {
+public class LP5Lev2 {
 
     public static void main(String[] args) throws FileNotFoundException {
         Scanner in;
@@ -19,7 +19,7 @@ public class LP5Lev1 {
 		    VERBOSE = true;
 		}
 	    Graph g = Graph.readGraph(in, false);   // read undirected graph from stream "in"
-		int result = BipartiteMatching.matching(g);
+		int result = Matching.matching(g);
 		System.out.println(result);
 		if (VERBOSE) {
 	//	    Output the edges of M.

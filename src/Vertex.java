@@ -15,6 +15,7 @@ public class Vertex {
     public List<Edge> Adj, revAdj; // adjacency list; use LinkedList or ArrayList
     public char level;//takes 'i' for inner and 'o' for outer and 'u' for unknown
     public Vertex mate;
+    public Vertex root;
 
     /**
      * Constructor for the vertex
