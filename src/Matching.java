@@ -11,7 +11,21 @@ public class Matching {
 		labelVerticesAsInnerOrOuter(g);
 		msize = 0;
 		initialGreedyMatch(g);
+		Queue<Vertex> Q = new LinkedList<>();
+		initializeGraph(g, Q);
 		return msize;
+	}
+	
+	private static void initializeGraph(Graph g, Queue<Vertex> Q) {
+		for (Vertex v : g) {
+			v.seen = false;
+			v.parent = null;
+			v.root = null;
+			if(v.mate== null && v.type == 'o'){
+				v.seen = true;
+				Q.add(v);
+			}
+		}
 	}
 	
 	private static void initialGreedyMatch(Graph g) {

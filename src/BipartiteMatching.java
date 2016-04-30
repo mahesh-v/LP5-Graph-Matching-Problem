@@ -23,21 +23,20 @@ public class BipartiteMatching {
 				Vertex u = Q.poll();
 				for (Edge e : u.Adj) {
 					Vertex v= e.otherEnd(u);
-					if(!v.seen)
-					{
-						v.parent = u;
-						v.seen = true;
-						if(v.mate == null){
-							if(processAugPath(v))
-								noAugPath = false;
-							break;
-						}
-						else{
-							Vertex x = v.mate;
-							x.seen = true;
-							x.parent = v;
-							Q.add(x);
-						}
+					if(v.seen)
+						continue;
+					v.parent = u;
+					v.seen = true;
+					if(v.mate == null){
+						if(processAugPath(v))
+							noAugPath = false;
+						break;
+					}
+					else{
+						Vertex x = v.mate;
+						x.seen = true;
+						x.parent = v;
+						Q.add(x);
 					}
 				}
 			}
