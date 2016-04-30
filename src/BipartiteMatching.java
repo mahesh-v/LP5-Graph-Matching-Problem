@@ -12,33 +12,24 @@ public class BipartiteMatching {
 			System.out.println("G is not bipartite");
 			return -1;
 		}
+		msize = 0;
 		initialGreedyMatch(g);
 		boolean noAugPath = false;
 		while(!noAugPath){
 			Queue<Vertex> Q = new LinkedList<Vertex>();
-			for (Vertex v : g) {
-				v.seen = false;
-				v.parent = null;
-				v.root = null;
-				if(v.mate== null && v.level == 'o'){
-					v.seen = true;
-					Q.add(v);
-				}
-			}
+			initializeGraph(g, Q);
 			noAugPath = true;
 			while(!Q.isEmpty()){
 				Vertex u = Q.poll();
-				Vertex v=null;
 				for (Edge e : u.Adj) {
-					v= e.otherEnd(u);
+					Vertex v= e.otherEnd(u);
 					if(!v.seen)
 					{
 						v.parent = u;
 						v.seen = true;
 						if(v.mate == null){
-							if(processAugPath(v)){
+							if(processAugPath(v))
 								noAugPath = false;
-							}
 							break;
 						}
 						else{
@@ -54,6 +45,18 @@ public class BipartiteMatching {
 				break;
 		}
 		return msize;
+	}
+
+	private static void initializeGraph(Graph g, Queue<Vertex> Q) {
+		for (Vertex v : g) {
+			v.seen = false;
+			v.parent = null;
+			v.root = null;
+			if(v.mate== null && v.type == 'o'){
+				v.seen = true;
+				Q.add(v);
+			}
+		}
 	}
 
 	private static boolean processAugPath(Vertex u) {
@@ -95,26 +98,25 @@ public class BipartiteMatching {
 				}
 			}
 		}
-		
 	}
 
 	private static boolean labelVerticesAsInnerOrOuter(Graph g) {
 		Vertex first = g.verts.get(1);
-		first.level = 'o';
-		LinkedList<Vertex> queue = new LinkedList<Vertex>();
+		first.type = 'o';
+		Queue<Vertex> queue = new LinkedList<Vertex>();
 		queue.add(first);
 		while(!queue.isEmpty()){
-			Vertex v = queue.removeFirst();
+			Vertex v = queue.poll();
 			for (Edge e : v.Adj) {
 				Vertex u = e.otherEnd(v);
-				if(u.level == 'u') {//unseen
-					if(v.level == 'i')
-						u.level = 'o';
-					else if(v.level == 'o')
-						u.level = 'i';
+				if(u.type == 'u') {//unseen
+					if(v.type == 'i')
+						u.type = 'o';
+					else if(v.type == 'o')
+						u.type = 'i';
 					queue.add(u);
 				}
-				else if((v.level == 'o' && u.level == 'o') || (v.level == 'i' && u.level == 'i'))//not bipartite
+				else if((v.type == 'o' && u.type == 'o') || (v.type == 'i' && u.type == 'i'))//not bipartite
 					return false;
 			}
 		}

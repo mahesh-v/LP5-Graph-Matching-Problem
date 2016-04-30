@@ -13,7 +13,7 @@ public class Vertex {
     public Vertex parent; // parent of the vertex
     public int distance; // distance to the vertex from the source vertex
     public List<Edge> Adj, revAdj; // adjacency list; use LinkedList or ArrayList
-    public char level;//takes 'i' for inner and 'o' for outer and 'u' for unknown
+    public char type;//takes 'i' for inner and 'o' for outer and 'u' for unknown
     public Vertex mate;
     public Vertex root;
 
@@ -29,7 +29,7 @@ public class Vertex {
 	parent = null;
 	Adj = new ArrayList<Edge>();
 	revAdj = new ArrayList<Edge>();   /* only for directed graphs */
-	level = 'u'; //initially unknown. Used for BiPartite graphs
+	type = 'u'; //initially unknown. Used for BiPartite graphs
 	mate = null;
     }
 
