@@ -1,0 +1,10 @@
+bip1.txt: Max matching = 35		Weighted = 191038
+bip2.txt: Max matching = 994		Weighted = 7002573
+bip3.txt: Max matching = 9924		Weighted = 69782985
+bip4.txt: Max matching = 99238		Weighted = 6948163
+
+nonbip5.txt: 50
+nonbip6.txt: 550
+nonbip7.txt: 50000
+nonbip8.txt: 283945
+nonbip9.txt: 500000
