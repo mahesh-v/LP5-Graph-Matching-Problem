@@ -16,6 +16,8 @@ public class Vertex {
     public char type;//takes 'i' for inner and 'o' for outer and 'u' for unknown
     public Vertex mate;
     public Vertex root;
+    public boolean active;
+    public ArrayList<Vertex> innerVerts;
 
     /**
      * Constructor for the vertex
@@ -31,6 +33,8 @@ public class Vertex {
 	revAdj = new ArrayList<Edge>();   /* only for directed graphs */
 	type = 'u'; //initially unknown. Used for BiPartite graphs
 	mate = null;
+	active = true;
+	innerVerts = new ArrayList<Vertex>();
     }
 
     /**
