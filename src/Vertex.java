@@ -19,6 +19,7 @@ public class Vertex {
     public boolean active;
     public ArrayList<Vertex> innerVerts;
     public int L;//label weight of node
+    public char card_type;
 
     /**
      * Constructor for the vertex

@@ -22,6 +22,7 @@ public class Matching {
 				if(v.mate == null){//case 1
 					v.type = 'i';
 					v.parent = u;
+					v.seen = true;
 					processAugPath(v);
 				}
 				else if(!v.seen && v.mate != null){//case 2
@@ -39,10 +40,14 @@ public class Matching {
 				else if(v.seen && v.type == 'i') // case 3
 					continue;
 				else if(v.type == 'o' && v.root != u.root){ //case 4
+					v.seen = true;
 					processAugPath(u,v);
 				}
 				else if(v.type == 'o' && v.root == u.root){//case 5
 					formBlossom(u,v);
+				}
+				else{
+					System.out.println("Unknown case");
 				}
 			}
 		}
@@ -66,12 +71,16 @@ public class Matching {
 		u.root = null;
 		v.root = null;//remember to check this.
 		Vertex pu = u.parent;
-		if(pu!=null)
+		if(pu!=null){
 			processAugPath(pu);
+			msize--;
+		}
 		Vertex pv = v.parent;
-		if(pv!=null)
+		if(pv!=null){
 			processAugPath(pv);
-		msize--;
+			msize--;
+		}
+		msize++;
 	}
 
 	private static void processAugPath(Vertex v) {
