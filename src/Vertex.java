@@ -18,6 +18,7 @@ public class Vertex {
     public Vertex root;
     public boolean active;
     public ArrayList<Vertex> innerVerts;
+    public int L;//label weight of node
 
     /**
      * Constructor for the vertex
