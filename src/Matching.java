@@ -19,6 +19,7 @@ public class Matching {
 				Vertex v = e.otherEnd(u);
 				if(v.mate == null){//case 1
 					v.type = 'i';
+					v.parent = u;
 					processAugPath(v);
 				}
 				if(!v.seen && v.mate != null){//case 2
@@ -33,6 +34,8 @@ public class Matching {
 					x.seen = true;
 					Q.add(x);
 				}
+				if(v.seen && v.type == 'i') // case 3
+					continue;
 				if(v.type == 'o' && v.root != u.root){ //case 4
 					processAugPath(u,v);
 				}
