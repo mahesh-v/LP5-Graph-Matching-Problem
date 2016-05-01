@@ -17,12 +17,14 @@ public class Matching {
 			Vertex u = Q.poll();
 			for (Edge e : u.Adj) {
 				Vertex v = e.otherEnd(u);
+				if(v.mate == u)
+					continue;
 				if(v.mate == null){//case 1
 					v.type = 'i';
 					v.parent = u;
 					processAugPath(v);
 				}
-				if(!v.seen && v.mate != null){//case 2
+				else if(!v.seen && v.mate != null){//case 2
 					v.type = 'i';
 					v.parent = u;
 					v.root = u;
@@ -34,12 +36,12 @@ public class Matching {
 					x.seen = true;
 					Q.add(x);
 				}
-				if(v.seen && v.type == 'i') // case 3
+				else if(v.seen && v.type == 'i') // case 3
 					continue;
-				if(v.type == 'o' && v.root != u.root){ //case 4
+				else if(v.type == 'o' && v.root != u.root){ //case 4
 					processAugPath(u,v);
 				}
-				if(v.type == 'o' && v.root == u.root){//case 5
+				else if(v.type == 'o' && v.root == u.root){//case 5
 					formBlossom(u,v);
 				}
 			}
@@ -55,17 +57,39 @@ public class Matching {
 
 	private static void formBlossom(Vertex u, Vertex v) {
 		// TODO Auto-generated method stub
-		
+		System.out.println("Blossom");
 	}
 
 	private static void processAugPath(Vertex u, Vertex v) {
-		// TODO Auto-generated method stub
-		
+		u.mate = v;
+		v.mate = u;
+		u.root = null;
+		v.root = null;//remember to check this.
+		Vertex pu = u.parent;
+		if(pu!=null)
+			processAugPath(pu);
+		Vertex pv = v.parent;
+		if(pv!=null)
+			processAugPath(pv);
+		msize--;
 	}
 
 	private static void processAugPath(Vertex v) {
-		// TODO Auto-generated method stub
-		
+		Vertex p = v.parent;
+		v.mate = p;
+		p.mate = v;
+		Vertex x = p.parent;
+		v.root = null;//check
+		p.root = null;
+		while(x!= null){
+			Vertex nmx = x.parent;
+			x.root = null;
+			nmx.root = null;
+			x.mate = nmx;
+			nmx.mate = x;
+			x = nmx.parent;
+		}
+		msize++;
 	}
 
 	private static void initializeGraph(Graph g, Queue<Vertex> Q) {
@@ -83,8 +107,11 @@ public class Matching {
 	
 	private static void initialGreedyMatch(Graph g) {
 		for (Vertex v : g) {
+//			if(v.name == 1)
+//				continue;
 			for (Edge e : v.Adj) {
 				Vertex u = e.otherEnd(v);
+//				if(u.name == 1) continue;
 				if(u.mate == null && v.mate == null){
 					u.mate = v;
 					v.mate = u;
