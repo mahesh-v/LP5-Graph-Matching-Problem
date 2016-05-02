@@ -3,6 +3,10 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 
+/**
+ * @author Darshan Narayana Reddy and Mahesh Venkateswaran
+ *
+ */
 public class Matching {
 	private static int msize = 0;
 	public static ArrayList<Edge> matchingEdges = new ArrayList<Edge>();
@@ -75,6 +79,9 @@ public class Matching {
 
 	private static void formBlossom(Vertex u, Vertex v, Graph g) {
 		Vertex lca = findLCA(u,v);
+		if(lca==null){
+			System.out.println("Null lca");
+		}
 		Vertex blossom = new Vertex(++g.numNodes);
 		g.verts.add(blossom);
 		Vertex p = u;
@@ -83,12 +90,13 @@ public class Matching {
 			p.active = false;
 			p = p.parent;
 		}
-		Vertex par = p.parent;//to set the parents to form a cycle within blossom
 		p = v;
+		Vertex par = p.parent;//to set the parents to form a cycle within blossom
 		p.parent = u;
 		while(p!=lca){
 			blossom.innerVerts.add(p);
 			p.active = false;
+			p = p.parent;
 			Vertex oldp = p;
 			p = par;
 			par = p.parent;
