@@ -11,45 +11,54 @@ public class Matching {
 		msize = 0;
 		initialGreedyMatch(g);
 		labelVerticesAsInnerOrOuter(g);
-		Queue<Vertex> Q = new LinkedList<>();
-		initializeGraph(g, Q);
-		while(!Q.isEmpty()){
-			Vertex u = Q.poll();
-			for (Edge e : u.Adj) {
-				Vertex v = e.otherEnd(u);
-				if(v.mate == u)
-					continue;
-				if(v.mate == null){//case 1
-					v.type = 'i';
-					v.parent = u;
-					v.seen = true;
-					processAugPath(v);
-				}
-				else if(!v.seen && v.mate != null){//case 2
-					v.type = 'i';
-					v.parent = u;
-					v.root = u;
-					Vertex x = v.mate;
-					x.type = 'o';
-					x.parent = v;
-					x.root = u;
-					v.seen = true;
-					x.seen = true;
-					Q.add(x);
-				}
-				else if(v.seen && v.type == 'i') // case 3
-					continue;
-				else if(v.type == 'o' && v.root != u.root){ //case 4
-					v.seen = true;
-					processAugPath(u,v);
-				}
-				else if(v.type == 'o' && v.root == u.root){//case 5
-					formBlossom(u,v);
-				}
-				else{
-					System.out.println("Unknown case");
+		boolean noAugPath = false;
+		while(!noAugPath){
+			Queue<Vertex> Q = new LinkedList<>();
+			initializeGraph(g, Q);
+			noAugPath = true;
+			while(!Q.isEmpty()){
+				Vertex u = Q.poll();
+				for (Edge e : u.Adj) {
+					Vertex v = e.otherEnd(u);
+					if(!v.seen && v.mate == null){//case 1
+						v.parent = u;
+						v.seen = true;
+						if(canAugmentPath(v)){
+							v.type = 'i';
+							noAugPath = false;
+							processAugPath(v);
+						}
+						break;
+					}
+					else if(!v.seen && v.mate != null){//case 2
+						v.type = 'i';
+						v.parent = u;
+						//v.root = u.root;
+						Vertex x = v.mate;
+						x.type = 'o';
+						x.parent = v;
+						//x.root = u.root;
+						v.seen = true;
+						x.seen = true;
+						Q.add(x);
+					}
+					else if(v.seen && v.type == 'i') // case 3
+						continue;
+					else if(v.type == 'o' && v.root != u.root){ //case 4
+						v.seen = true;
+						noAugPath = false;
+						processAugPath(u,v);
+					}
+					else if(v.type == 'o' && v.root == u.root){//case 5
+						formBlossom(u,v);
+					}
+					else{
+						System.out.println("Unknown case");
+					}
 				}
 			}
+			if(Q.isEmpty() && noAugPath)
+				break;
 		}
 		expandBlossoms(g);
 		return msize;
@@ -66,21 +75,33 @@ public class Matching {
 	}
 
 	private static void processAugPath(Vertex u, Vertex v) {
+		System.out.println("hmm");
 		u.mate = v;
 		v.mate = u;
 		u.root = null;
 		v.root = null;//remember to check this.
 		Vertex pu = u.parent;
-		if(pu!=null){
+		Vertex pv = v.parent;
+		if(pu!=null && canAugmentPath(pu)){
 			processAugPath(pu);
 			msize--;
 		}
-		Vertex pv = v.parent;
-		if(pv!=null){
+		
+		if(pv!=null && canAugmentPath(pv)){
 			processAugPath(pv);
 			msize--;
 		}
 		msize++;
+	}
+
+	private static boolean canAugmentPath(Vertex pu) {
+		Vertex p = pu;
+		while(p!= null){
+			if(p.root != null)
+				return false;
+			p = p.parent;
+		}
+		return true;
 	}
 
 	private static void processAugPath(Vertex v) {
@@ -88,12 +109,12 @@ public class Matching {
 		v.mate = p;
 		p.mate = v;
 		Vertex x = p.parent;
-		v.root = null;//check
-		p.root = null;
+		v.root = v;//check
+		p.root = v;
 		while(x!= null){
 			Vertex nmx = x.parent;
-			x.root = null;
-			nmx.root = null;
+			x.root = v;
+			nmx.root = v;
 			x.mate = nmx;
 			nmx.mate = x;
 			x = nmx.parent;
@@ -108,7 +129,6 @@ public class Matching {
 			v.root = null;
 			if(v.mate== null && v.type == 'o'){
 				v.seen = true;
-				v.root = v;
 				Q.add(v);
 			}
 		}
