@@ -3,10 +3,22 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 
+/**
+ * Optimal matching in bipartite graphs
+ * 
+ * @author Darshan Narayana Reddy and Mahesh Venkateswaran
+ *
+ */
 public class BipartiteMatching {
 	private static int msize = 0;
 	public static ArrayList<Edge> matchingEdges = new ArrayList<Edge>();
 
+	/**
+	 * Returns the cardinality of the graph. -1 if not a bipartite graph.
+	 * 
+	 * @param g Input graph
+	 * @return Cardinality of maximum matching for the given graph
+	 */
 	public static int matching(Graph g) {
 		if(!labelVerticesAsInnerOrOuter(g)){
 			System.out.println("G is not bipartite");
@@ -28,7 +40,7 @@ public class BipartiteMatching {
 					v.parent = u;
 					v.seen = true;
 					if(v.mate == null){
-						if(processAugPath(v))
+						if(processAugPath(v))//returns false if unable to process due to conflict
 							noAugPath = false;
 						break;
 					}
@@ -46,6 +58,13 @@ public class BipartiteMatching {
 		return msize;
 	}
 
+	/**
+	 * Set parents as null, seen as false, and root as null.
+	 * Add unmatched outer edges to the queue
+	 * 
+	 * @param g
+	 * @param Q
+	 */
 	private static void initializeGraph(Graph g, Queue<Vertex> Q) {
 		for (Vertex v : g) {
 			v.seen = false;
@@ -58,6 +77,14 @@ public class BipartiteMatching {
 		}
 	}
 
+	/**
+	 * Returns false if the path contains overlaps with 
+	 * another path that has already been augmented
+	 * Else, augments the path starting from vertex u.
+	 * 
+	 * @param u
+	 * @return true if successful
+	 */
 	private static boolean processAugPath(Vertex u) {
 		Vertex p = u;
 		while(p!= null){
@@ -84,8 +111,15 @@ public class BipartiteMatching {
 		return true;
 	}
 
+	/**
+	 * Finds an initial greedy match for the given graph
+	 * 
+	 * @param g
+	 */
 	private static void initialGreedyMatch(Graph g) {
 		for (Vertex v : g) {
+			if(v.mate!=null)
+				continue;
 			for (Edge e : v.Adj) {
 				Vertex u = e.otherEnd(v);
 				if(u.mate == null && v.mate == null){
@@ -99,6 +133,13 @@ public class BipartiteMatching {
 		}
 	}
 
+	/**
+	 * Labels vertices as inner or outer.
+	 * Returns false if it is not bipartite
+	 * 
+	 * @param g input graph
+	 * @return true if labelling was successful
+	 */
 	private static boolean labelVerticesAsInnerOrOuter(Graph g) {
 		Vertex first = g.verts.get(1);
 		first.type = 'o';
