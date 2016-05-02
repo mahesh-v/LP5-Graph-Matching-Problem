@@ -10,6 +10,7 @@ public class Matching {
 	public static int matching(Graph g) {
 		msize = 0;
 		initialGreedyMatch(g);
+		System.out.println(msize);
 		labelVerticesAsInnerOrOuter(g);
 		boolean noAugPath = false;
 		while(!noAugPath){
@@ -24,33 +25,33 @@ public class Matching {
 						v.parent = u;
 						v.seen = true;
 						if(canAugmentPath(v)){
+							System.out.println("Aug");
 							v.type = 'i';
 							noAugPath = false;
 							processAugPath(v);
+							break;
 						}
-						break;
 					}
 					else if(!v.seen && v.mate != null){//case 2
 						v.type = 'i';
 						v.parent = u;
-						//v.root = u.root;
 						Vertex x = v.mate;
 						x.type = 'o';
 						x.parent = v;
-						//x.root = u.root;
 						v.seen = true;
 						x.seen = true;
 						Q.add(x);
 					}
-					else if(v.seen && v.type == 'i') // case 3
+					else if(v.seen && v.type == 'i'){ // case 3
 						continue;
+					}
 					else if(v.type == 'o' && v.root != u.root){ //case 4
 						v.seen = true;
 						noAugPath = false;
 						processAugPath(u,v);
 					}
 					else if(v.type == 'o' && v.root == u.root){//case 5
-						formBlossom(u,v);
+						formBlossom(u,v,g);
 					}
 					else{
 						System.out.println("Unknown case");
@@ -69,9 +70,57 @@ public class Matching {
 		
 	}
 
-	private static void formBlossom(Vertex u, Vertex v) {
-		// TODO Auto-generated method stub
-		System.out.println("Blossom");
+	private static void formBlossom(Vertex u, Vertex v, Graph g) {
+		Vertex lca = findLCA(u,v);
+		Vertex blossom = new Vertex(++g.numNodes);
+		g.verts.add(blossom);
+		Vertex p = u;
+		while(p!=lca){
+			blossom.innerVerts.add(p);
+			p = p.parent;
+		}
+		p = v;
+		while(p!=lca){
+			blossom.innerVerts.add(p);
+			p = p.parent;
+		}
+		blossom.innerVerts.add(p);
+		for (Vertex vert : blossom.innerVerts) {
+			for (Edge e : vert.Adj) {
+				Vertex vert2 = e.otherEnd(vert);
+				if(!blossom.innerVerts.contains(vert2))
+					g.addEdge(blossom.name, vert2.name, e.Weight);
+			}
+		}
+	}
+
+	private static Vertex findLCA(Vertex u, Vertex v) {
+		ArrayList<Vertex> ancestors = new ArrayList<Vertex>();
+		ancestors.add(u);
+		ancestors.add(v);
+		Vertex pu = u.parent;
+		Vertex pv = v.parent;
+		while(pu!= null && pv!= null){
+			if(ancestors.contains(pu))
+				return pu;
+			if(ancestors.contains(pv))
+				return pv;
+			ancestors.add(pu);
+			ancestors.add(pv);
+			pu = pu.parent;
+			pv = pv.parent;
+		}
+		while(pu!=null){
+			if(ancestors.contains(pu))
+				return pu;
+			pu = pu.parent;
+		}
+		while(pv!= null){
+			if(ancestors.contains(pv))
+				return pv;
+			pv = pv.parent;
+		}
+		return null;
 	}
 
 	private static void processAugPath(Vertex u, Vertex v) {
@@ -109,7 +158,7 @@ public class Matching {
 		v.mate = p;
 		p.mate = v;
 		Vertex x = p.parent;
-		v.root = v;//check
+		v.root = v; 
 		p.root = v;
 		while(x!= null){
 			Vertex nmx = x.parent;
