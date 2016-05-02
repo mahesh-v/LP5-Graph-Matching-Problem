@@ -83,11 +83,16 @@ public class Matching {
 			p.active = false;
 			p = p.parent;
 		}
+		Vertex par = p.parent;//to set the parents to form a cycle within blossom
 		p = v;
+		p.parent = u;
 		while(p!=lca){
 			blossom.innerVerts.add(p);
 			p.active = false;
-			p = p.parent;
+			Vertex oldp = p;
+			p = par;
+			par = p.parent;
+			p.parent = oldp;
 		}
 		blossom.innerVerts.add(lca);
 		lca.active = false;
