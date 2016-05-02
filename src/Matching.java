@@ -71,10 +71,47 @@ public class Matching {
 		expandBlossoms(g);
 		return msize;
 	}
-	
+
 	private static void expandBlossoms(Graph g) {
+		for (Vertex v : g) {
+			//check if blossom
+			if (!v.innerVerts.isEmpty()) {
+				v.active = false;
+				for (Vertex inner : v.innerVerts) {
+					inner.active = true;
+				}
+				for (Edge e : v.Adj) {
+					Vertex u = e.otherEnd(v);
+					if (u.mate == v){
+						Edge oldEdge = e.oldEdge;
+						Vertex k = oldEdge.otherEnd(u);
+						// this is stem not matched, now no need to modify the matchign in the blossom
+						if (k.mate != null) {
+							Vertex pk = k.parent;
+							Vertex xk = pk.parent;
+							pk.mate = xk;
+							xk.mate = pk;
+							while (xk != k){
+								Vertex nmx = xk.parent;
+								xk = nmx.parent;
+								nmx.mate = xk;
+								xk.mate = nmx;
+							}
+
+						}else {
+							k.mate = u;
+							u.mate = k;
+						}
+
+
+					}
+				}
+
+
+			}
+		}
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	private static void formBlossom(Vertex u, Vertex v, Graph g) {
@@ -99,6 +136,9 @@ public class Matching {
 			p = p.parent;
 			Vertex oldp = p;
 			p = par;
+			if (p == null) {
+				break;
+			}
 			par = p.parent;
 			p.parent = oldp;
 		}
