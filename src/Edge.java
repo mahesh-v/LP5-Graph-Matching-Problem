@@ -7,6 +7,7 @@ public class Edge {
     public Vertex To; // tail vertex
     public int Weight;// weight of the arc
     public boolean z;
+    public Edge oldEdge;
 
     /**
      * Constructor for Edge

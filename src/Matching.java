@@ -19,13 +19,14 @@ public class Matching {
 			noAugPath = true;
 			while(!Q.isEmpty()){
 				Vertex u = Q.poll();
+				if(!u.active) continue;
 				for (Edge e : u.Adj) {
 					Vertex v = e.otherEnd(u);
+					if(!v.active) continue;
 					if(!v.seen && v.mate == null){//case 1
 						v.parent = u;
 						v.seen = true;
 						if(canAugmentPath(v)){
-							System.out.println("Aug");
 							v.type = 'i';
 							noAugPath = false;
 							processAugPath(v);
@@ -36,6 +37,8 @@ public class Matching {
 						v.type = 'i';
 						v.parent = u;
 						Vertex x = v.mate;
+						if(!x.active)
+							System.out.println("Inactive. Check");
 						x.type = 'o';
 						x.parent = v;
 						v.seen = true;
@@ -77,19 +80,26 @@ public class Matching {
 		Vertex p = u;
 		while(p!=lca){
 			blossom.innerVerts.add(p);
+			p.active = false;
 			p = p.parent;
 		}
 		p = v;
 		while(p!=lca){
 			blossom.innerVerts.add(p);
+			p.active = false;
 			p = p.parent;
 		}
-		blossom.innerVerts.add(p);
+		blossom.innerVerts.add(lca);
+		lca.active = false;
 		for (Vertex vert : blossom.innerVerts) {
 			for (Edge e : vert.Adj) {
 				Vertex vert2 = e.otherEnd(vert);
-				if(!blossom.innerVerts.contains(vert2))
-					g.addEdge(blossom.name, vert2.name, e.Weight);
+				if(!blossom.innerVerts.contains(vert2)){
+					Edge e2 = new Edge(blossom, vert2, e.Weight);
+					e2.oldEdge = e;
+					blossom.Adj.add(e2);
+					vert2.Adj.add(e2);
+				}
 			}
 		}
 	}
@@ -105,6 +115,8 @@ public class Matching {
 				return pu;
 			if(ancestors.contains(pv))
 				return pv;
+			if(pu==pv)
+				return pu;
 			ancestors.add(pu);
 			ancestors.add(pv);
 			pu = pu.parent;
@@ -173,6 +185,8 @@ public class Matching {
 
 	private static void initializeGraph(Graph g, Queue<Vertex> Q) {
 		for (Vertex v : g) {
+			if(!v.active)
+				continue;
 			v.seen = false;
 			v.parent = null;
 			v.root = null;
@@ -185,8 +199,9 @@ public class Matching {
 	
 	private static void initialGreedyMatch(Graph g) {
 		for (Vertex v : g) {
-//			if(v.name == 1)
-//				continue;
+			if(v.mate != null)
+				continue;
+			v.active = true;
 			for (Edge e : v.Adj) {
 				Vertex u = e.otherEnd(v);
 //				if(u.name == 1) continue;
